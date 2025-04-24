@@ -1,47 +1,57 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
 [RequireComponent(typeof(Rigidbody), typeof(Renderer))]
 public class Cube : MonoBehaviour
 {
-    private float _lifeTime;
     private Rigidbody _rigidbody;
     private Renderer _renderer;
 
     public event UnityAction<Cube> Deactivated;
 
-    public bool IsDestroyed { get; private set; } = false;
+    public bool IsCollided { get; private set; } = false;
 
     private void Awake()
     {
         _renderer = GetComponent<Renderer>();
         _rigidbody = GetComponent<Rigidbody>();
-        _lifeTime = GetLifeTime();
     }
 
     public void StartDestruction()
     {
+        StartCoroutine(LifeTimeCauntUp());
+
         GetRandomColor();
 
-        IsDestroyed = true;
-
-        Invoke(nameof(Deactivate), _lifeTime);
+        IsCollided = true;
     }
 
-    public void SetPosition(Vector3 position)
+    public void Init(Vector3 position, Color color)
     {
         transform.position = position;
-    }
 
-    public void SetColor(Color color)
-    {
         _renderer.material.color = color;
-    }
 
-    public void StopMotion() 
-    {
         _rigidbody.velocity = Vector3.zero;
         _rigidbody.angularVelocity = Vector3.zero;
+    }
+
+    private IEnumerator LifeTimeCauntUp()
+    {
+        float delay = 1;
+        float lifeTime = GetLifeTime();
+
+        WaitForSecondsRealtime wait = new(delay);
+
+        while (lifeTime > 0)
+        {
+            yield return wait;
+            lifeTime--;
+        }
+
+        Deactivate();
+        StopCoroutine(LifeTimeCauntUp());
     }
 
     private void GetRandomColor()
@@ -51,7 +61,7 @@ public class Cube : MonoBehaviour
 
     private void Deactivate()
     {
-        IsDestroyed = false;
+        IsCollided = false;
         Deactivated?.Invoke(this);
     }
 

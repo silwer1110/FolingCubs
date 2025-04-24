@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Spawner : MonoBehaviour
@@ -6,33 +7,42 @@ public class Spawner : MonoBehaviour
 
     private Color _baseColor = Color.white;
     private readonly float _spawnInterval = 0.5f;
+    private int _maxCubeCount = 20;
 
     private void Start()
     {
         _cubes.CreateObjectPool();
-        InvokeRepeating(nameof(Spawn), 0.0f, _spawnInterval);
+        StartCoroutine(SpawnLoop(_spawnInterval));
+    }
+
+    private IEnumerator SpawnLoop(float delay)
+    {
+        WaitForSeconds wait = new(delay);
+
+        while (true)
+        {
+            Spawn();
+            yield return wait;
+        }
     }
 
     private void Spawn()
     {
-        if (_cubes.Cubes.CountActive < _cubes.MaxSize)
-            SetUpCube(_cubes.Cubes.Get());
-    }
+        Cube cube;
 
-    private void SetUpCube(Cube cube)
-    {
-        cube.Deactivated += BackTooPool;
+        if (_maxCubeCount >= _cubes.GetActiveCubeCount())
+        {
+            cube = _cubes.GetCube();
 
-        cube.StopMotion();
+            cube.Deactivated += BackTooPool;
 
-        cube.SetColor(_baseColor);
-
-        cube.SetPosition(GetRandomPosition());
+            cube.Init(GetRandomPosition(), _baseColor);
+        }
     }
 
     private void BackTooPool(Cube cube)
     {
-        _cubes.Cubes.Release(cube);
+        _cubes.ReleaseCube(cube);
 
         cube.Deactivated -= BackTooPool;
     }
