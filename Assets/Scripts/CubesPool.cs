@@ -6,7 +6,7 @@ public class CubesPool : MonoBehaviour
     [SerializeField] private Cube _cubePrefab;
 
     private ObjectPool<Cube> _cubes;
-    public int _maxSize = 20;
+    private int _maxSize = 20;
     private readonly int _capacity = 10;
 
     public void CreateObjectPool()

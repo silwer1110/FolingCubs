@@ -34,17 +34,17 @@ public class Spawner : MonoBehaviour
         {
             cube = _cubes.GetCube();
 
-            cube.Deactivated += BackTooPool;
+            cube.Deactivated += ReturnToPool;
 
             cube.Init(GetRandomPosition(), _baseColor);
         }
     }
 
-    private void BackTooPool(Cube cube)
+    private void ReturnToPool(Cube cube)
     {
         _cubes.ReleaseCube(cube);
 
-        cube.Deactivated -= BackTooPool;
+        cube.Deactivated -= ReturnToPool;
     }
 
     private Vector3 GetRandomPosition()
