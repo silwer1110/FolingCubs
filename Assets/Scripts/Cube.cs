@@ -1,6 +1,6 @@
+using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Events;
 
 [RequireComponent(typeof(Rigidbody), typeof(Renderer))]
 public class Cube : MonoBehaviour
@@ -8,7 +8,7 @@ public class Cube : MonoBehaviour
     private Rigidbody _rigidbody;
     private Renderer _renderer;
 
-    public event UnityAction<Cube> Deactivated;
+    public event Action<Cube> Deactivated;
 
     public bool IsCollided { get; private set; } = false;
 
